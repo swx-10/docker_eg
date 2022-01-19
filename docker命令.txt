@@ -1,0 +1,67 @@
+﻿#docker 创建新镜像 rest为自定义镜像名称
+docker build -t rest .
+
+运行镜像程序： 7001是本机端口，浏览器输入的。80是docker容器内用的
+docker run -p 7001:7001 rest 
+
+
+
+ctrl +c  终端退出
+停止容器。否则，在下一步中重新运行容器时，将会收到错误响应。
+docker container stop <Container NAME or ID> 
+#来删除一个容器
+docker rm 容器id
+
+#来删除一个镜像
+docker rmi 镜像id
+
+#删除所有已退出的容器
+docker rm $(docker ps -q -f status=exited)
+
+#删除所有已停止的容器
+docker rm $(docker ps -a -q)
+
+#删除所有正在运行和已停止的容器**（当进入已启动服务的容器无法退出时，关闭shell，再打开，输入以下命令）
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+#删除所有容器，没有任何标准
+docker container rm $(docker container ps -aq)
+
+#但是，在1.13及更高版本中，对于完整的系统和清理，我们可以直接使用以下命令，
+docker system prune
+
+#所有未使用的容器，图像，网络和卷都将被删除。另外，单我们可以使用以下命令来清理组件：
+docker container prune
+docker image prune
+docker network prune
+docker volume prune
+
+ 镜像的创建：打开到需要的文件夹目录：rabbitmq.tar为目标文件，rabbitmq:management   是源镜像名（name:tag）
+docker save -o rabbitmq.tar  rabbitmq:management     
+#下载rabbitmq.tar 到本地（未安装lrzsz的自行安装）    
+#sz  rabbitmq.tar   
+#在另一台安装好docker的服务器上 
+mkdir /usr/local/images
+
+#将下载到本地的rabbitmq.tar 上传到 /usr/local/images
+成功导入镜像及相关元数据，包括tag信息
+#docker load -i /usr/local/images/rabbitmq.tar  （linux）
+#docker load -i D:/fjj/docker/local_dockeri/grpcimages/grpctg.tar （windows）
+
+#查看导入的镜像 
+docker images
+
+docker 内部存放日志路径
+/var/lib/docker/containers/
+cd 容器id
+tail -f 容器id
+
+#查看容器内 7a 为id，ls 命令 /tem 容器内地址
+docker exec 7a ls /tmp
+在外部查看容器日志，只有系统日志，没有log自加日志
+ docker logs --since 30m CONTAINER_ID
+
+#如何把容器内日志到外部
+py文件中把日志导入到一个文件夹
+compose.yml 用volumns配置路径
